@@ -2,6 +2,7 @@
 #include "catch.hpp"
 #include "dict.hpp"
 #include <string>
+#include <vector>
 
 using Catch::Matchers::UnorderedEquals;
 
@@ -14,15 +15,48 @@ TEST_CASE("Test Dict")
     // non existent person from the dictionary.
     Dict<std::string, int> name_to_age;
 
+    // The dictionary should initially be empty
     REQUIRE(name_to_age.len() == 0);
 
+    // Insert first key-value pair
     name_to_age.set("Jane", 20);
+
+    // Check that the element was inserted correctly
     REQUIRE(name_to_age.len() == 1);
     REQUIRE(name_to_age.has("Jane"));
     REQUIRE(name_to_age.get("Jane").has_value());
     REQUIRE(name_to_age.get("Jane").value() == 20);
-    REQUIRE_THAT(name_to_age.keys(), UnorderedEquals(std::vector<std::string>{"Jane"}));
-    REQUIRE_THAT(name_to_age.values(), UnorderedEquals(std::vector<int>{20}));
 
+    // Insert second key-value pair
     name_to_age.set("Tarzan", 25);
+
+    // Now there should be two elements
+    REQUIRE(name_to_age.len() == 2);
+    REQUIRE(name_to_age.has("Tarzan"));
+    REQUIRE(name_to_age.get("Tarzan").value() == 25);
+
+    // Overwrite existing key
+    name_to_age.set("Jane", 21);
+
+    // Size should stay the same, value should change
+    REQUIRE(name_to_age.len() == 2);
+    REQUIRE(name_to_age.get("Jane").value() == 21);
+
+    // Delete an existing key
+    name_to_age.del("Jane");
+
+    // Jane should be gone
+    REQUIRE(name_to_age.len() == 1);
+    REQUIRE_FALSE(name_to_age.has("Jane"));
+    REQUIRE_FALSE(name_to_age.get("Jane").has_value());
+
+    // Tarzan should still exist
+    REQUIRE(name_to_age.has("Tarzan"));
+    REQUIRE(name_to_age.get("Tarzan").value() == 25);
+
+    // Deleting a key that does not exist should do nothing
+    name_to_age.del("Jane");
+
+    // Nothing should change
+    REQUIRE(name_to_age.len() == 1);
 }

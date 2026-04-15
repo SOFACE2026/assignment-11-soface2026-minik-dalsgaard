@@ -15,6 +15,9 @@
 template <class K, class V>
 class Dict
 {
+private:
+    std::vector<K> keyStorage; // Stores all keys
+    std::vector<V> valueStorage;  // Stores all values
 
 public:
     /**
@@ -26,6 +29,18 @@ public:
      */
     void set(K key, V val)
     {
+        // Search for key in key storage
+        for(size_t i = 0; i < keyStorage.size(); i++){
+            if(keyStorage[i] == key){
+                // If key is found -> overwrite existing value
+                valueStorage[i] = val;
+                return;
+            }
+        }
+
+        // Key not found -> insert new key-value pair
+        keyStorage.push_back(key);
+        valueStorage.push_back(val);
     }
 
     /**
@@ -37,6 +52,13 @@ public:
      */
     bool has(K key) const
     {
+        // Go through keys: 
+        // true if found; false if not
+        for(const auto& k : keyStorage){
+            if(k == key){
+                return true;
+            }
+        }
         return false;
     }
 
@@ -47,7 +69,8 @@ public:
      */
     size_t len()
     {
-        return 0;
+        // Return number of keys
+        return keyStorage.size();
     }
 
     /**
@@ -59,7 +82,15 @@ public:
      */
     std::optional<V> get(K key) const
     {
-        return {};
+        // Search for key
+        for(size_t i = 0; i < keyStorage.size(); i++){
+            if(keyStorage[i] == key){
+                return valueStorage[i]; // Return associated value from storage
+            }
+        }
+
+        // Key not found -> no value to return
+        return std::nullopt;
     }
 
     /**
@@ -72,6 +103,16 @@ public:
      */
     void del(K key)
     {
+        // Search for key
+        for(size_t i = 0; i < keyStorage.size(); i++){
+            if(keyStorage[i] == key){
+                // Delete key and corresponding value
+                keyStorage.erase(keyStorage.begin() + i);
+                valueStorage.erase(valueStorage.begin() + i);
+                return;
+            }
+        }
+        // If key not found -> do nothing
     }
 
     /**
@@ -81,7 +122,8 @@ public:
      */
     std::vector<K> keys()
     {
-        return {};
+        // Return all keys from storage
+        return keyStorage;
     }
 
     /**
@@ -91,6 +133,7 @@ public:
      */
     std::vector<V> values()
     {
-        return {};
+        // Return all values from storage
+        return valueStorage;
     }
 };
